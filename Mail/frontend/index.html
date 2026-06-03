@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ichin Mail - Private Communication</title>
+    <meta name="description" content="Ichin Mail - Private communication across the Ichin Network">
+    <meta name="keywords" content="email, mail, ichin, private, secure">
+    <meta property="og:title" content="Ichin Mail">
+    <meta property="og:description" content="Private communication across the Ichin Network">
+    <meta name="twitter:title" content="Ichin Mail">
+    <meta name="twitter:description" content="Private communication across the Ichin Network">
+
+    <script src="https://resource.trickle.so/vendor_lib/unpkg/react@18/umd/react.production.min.js"></script>
+    <script src="https://resource.trickle.so/vendor_lib/unpkg/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://resource.trickle.so/vendor_lib/unpkg/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://resource.trickle.so/vendor_lib/unpkg/lucide-static@0.516.0/font/lucide.css" rel="stylesheet">
+
+    <style type="text/tailwindcss">
+    :root {
+        --bg-primary: #0f1115;
+        --bg-surface: #161a22;
+        --bg-hover: #1e232d;
+        --accent: #4f8cff;
+        --accent-hover: #3a7aef;
+        --text-primary: #ffffff;
+        --text-secondary: #9aa4b2;
+        --border-color: #2a2f3a;
+    }
+    
+    .light-mode {
+        --bg-primary: #f5f7fa;
+        --bg-surface: #ffffff;
+        --bg-hover: #eef1f5;
+        --accent: #4f8cff;
+        --accent-hover: #3a7aef;
+        --text-primary: #1a1d21;
+        --text-secondary: #6b7280;
+        --border-color: #e5e7eb;
+    }
+
+    @layer base {
+        body {
+            @apply bg-[var(--bg-primary)] text-[var(--text-primary)] font-sans;
+        }
+    }
+
+    @layer components {
+        .sidebar-item {
+            @apply flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer transition-colors text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)];
+        }
+        .sidebar-item.active {
+            @apply bg-[var(--bg-hover)] text-[var(--text-primary)];
+        }
+        .btn-primary {
+            @apply bg-[var(--accent)] text-white px-4 py-2 rounded-lg hover:bg-[var(--accent-hover)] transition-colors;
+        }
+        .email-item {
+            @apply p-4 border-b border-[var(--border-color)] cursor-pointer hover:bg-[var(--bg-hover)] transition-colors;
+        }
+        .email-item.unread {
+            @apply bg-[var(--bg-hover)];
+        }
+    }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel" src="utils/api.js"></script>
+    <script type="text/babel" src="utils/themeStore.js"></script>
+    <script type="text/babel" src="components/Logo.js"></script>
+    <script type="text/babel" src="components/Sidebar.js"></script>
+    <script type="text/babel" src="components/EmailList.js"></script>
+    <script type="text/babel" src="components/EmailView.js"></script>
+    <script type="text/babel" src="components/ComposeModal.js"></script>
+    <script type="text/babel" src="components/SearchBar.js"></script>
+    <script type="text/babel" src="app.js"></script>
+</body>
+</html>

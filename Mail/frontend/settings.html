@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Ichin Mail</title>
+    <meta name="description" content="Ichin Mail Settings - Configure your email preferences">
+    <script src="https://resource.trickle.so/vendor_lib/unpkg/react@18/umd/react.production.min.js"></script>
+    <script src="https://resource.trickle.so/vendor_lib/unpkg/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://resource.trickle.so/vendor_lib/unpkg/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://resource.trickle.so/vendor_lib/unpkg/lucide-static@0.516.0/font/lucide.css" rel="stylesheet">
+    <style type="text/tailwindcss">
+    :root {
+        --bg-primary: #0f1115;
+        --bg-surface: #161a22;
+        --bg-hover: #1e232d;
+        --accent: #4f8cff;
+        --accent-hover: #3a7aef;
+        --text-primary: #ffffff;
+        --text-secondary: #9aa4b2;
+        --border-color: #2a2f3a;
+    }
+    .light-mode {
+        --bg-primary: #f5f7fa;
+        --bg-surface: #ffffff;
+        --bg-hover: #eef1f5;
+        --accent: #4f8cff;
+        --accent-hover: #3a7aef;
+        --text-primary: #1a1d21;
+        --text-secondary: #6b7280;
+        --border-color: #e5e7eb;
+    }
+    @layer base {
+        body { @apply bg-[var(--bg-primary)] text-[var(--text-primary)] font-sans; }
+    }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel" src="utils/api.js"></script>
+    <script type="text/babel" src="utils/themeStore.js"></script>
+    <script type="text/babel" src="settings-app.js"></script>
+</body>
+</html>

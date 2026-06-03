@@ -1,0 +1,7 @@
+{
+  "routes": [
+    {"method": "GET", "path": "/hello", "handler": "index"},
+    {"method": "GET", "path": "/hello/:name", "handler": "greet"},
+    {"method": "POST", "path": "/hello/echo", "handler": "echo"}
+  ]
+}

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ichin Search</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: system-ui, -apple-system, sans-serif; background: #f8f6f3; color: #1c1814; }
+  main { max-width: 640px; margin: 0 auto; padding: 2rem 1rem; }
+  h1 { font-size: 2rem; text-align: center; margin-bottom: 1.5rem; }
+  form { display: flex; gap: 0.5rem; margin-bottom: 2rem; }
+  input { flex: 1; padding: 0.75rem 1rem; font-size: 1.1rem; border: 1px solid #ccc; border-radius: 8px; outline: none; }
+  input:focus { border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59,130,246,0.2); }
+  button { background: #3b82f6; color: #fff; padding: 0.75rem 1.5rem; font-size: 1rem; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; }
+  button:hover { background: #2563eb; }
+  button:disabled { opacity: 0.5; }
+  .result { background: #fff; border: 1px solid #e5e2dd; border-radius: 8px; padding: 1rem; margin-bottom: 0.75rem; }
+  .result-header { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: #78716c; margin-bottom: 0.25rem; }
+  .verified { background: #dcfce7; color: #166534; padding: 0.1rem 0.5rem; border-radius: 999px; font-size: 0.75rem; font-weight: 600; }
+  .score { margin-left: auto; color: #a8a29e; font-size: 0.8rem; }
+  .title { font-size: 1.1rem; font-weight: 600; color: #2563eb; margin-bottom: 0.15rem; }
+  .path { font-size: 0.85rem; color: #78716c; margin-bottom: 0.4rem; }
+  .snippet { color: #44403c; line-height: 1.5; }
+  .empty, .info { text-align: center; color: #a8a29e; margin-top: 4rem; }
+  .info p { margin-bottom: 0.5rem; }
+  .meta { font-size: 0.85rem; color: #78716c; margin-bottom: 1rem; }
+  .error { color: #dc2626; text-align: center; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Ichin Search</h1>
+  <form id="searchForm">
+    <input type="text" id="query" placeholder="Search registered sites and pages..." autofocus>
+    <button type="submit" id="searchBtn">Search</button>
+  </form>
+  <div id="results"></div>
+  <div class="info" id="info">
+    <p>Search across registered Ichin sites and pages.</p>
+    <p style="font-size:0.85rem">Powered by registry-based indexing and simple keyword ranking.</p>
+  </div>
+</main>
+
+<script>
+  const form = document.getElementById('searchForm');
+  const input = document.getElementById('query');
+  const btn = document.getElementById('searchBtn');
+  const resultsDiv = document.getElementById('results');
+  const infoDiv = document.getElementById('info');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const q = input.value.trim();
+    if (!q) return;
+
+    btn.disabled = true;
+    btn.textContent = '...';
+    infoDiv.style.display = 'none';
+    resultsDiv.innerHTML = '<p style="text-align:center;color:#a8a29e">Searching...</p>';
+
+    try {
+      const res = await fetch(`http://localhost:3001/search?q=${encodeURIComponent(q)}`);
+      const data = await res.json();
+
+      if (data.results.length === 0) {
+        resultsDiv.innerHTML = `<p class="empty">No results found for "${q}".</p>`;
+      } else {
+        resultsDiv.innerHTML = `
+          <p class="meta">${data.results.length} result${data.results.length !== 1 ? 's' : ''} for "${data.query}"</p>
+          ${data.results.map(r => `
+            <div class="result">
+              <div class="result-header">
+                <span>${r.site}</span>
+                ${r.verified ? '<span class="verified">verified</span>' : ''}
+                <span class="score">score: ${r.score}</span>
+              </div>
+              <div class="title">${r.title}</div>
+              <div class="path">${r.path}</div>
+              <div class="snippet">${r.snippet}</div>
+            </div>
+          `).join('')}
+        `;
+      }
+    } catch {
+      resultsDiv.innerHTML = '<p class="error">Could not connect to search engine. Make sure the server is running on port 3001.</p>';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Search';
+    }
+  });
+</script>
+</body>
+</html>
