@@ -1,6 +1,3 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-
 class ErrorBoundary extends React.Component {
     constructor(props) {
         super(props);
@@ -81,7 +78,7 @@ function App() {
                     />
                     <div className="flex-1 flex">
                         <WebView url={currentTab?.url || ''} title={currentTab?.title || ''} />
-                        {splitView && <WebView url="https://notion.so" title="Notion" />}
+                        {splitView && <WebView url={currentTab?.url || ''} title={currentTab?.title || ''} />}
                     </div>
                 </div>
                 <CommandPalette isOpen={commandOpen} onClose={() => setCommandOpen(false)} />
