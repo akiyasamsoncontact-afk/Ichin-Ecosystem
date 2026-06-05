@@ -50,3 +50,7 @@ Project state per recent audit:
 - Production Readiness: 52/100
 
 See `INICHIN_AUDIT_REPORT.md` for full audit details and `propmt check .md` for the audit specification.
+
+---
+
+*Made in collaboration with AI.*
