@@ -1242,7 +1242,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         )
         .init();
 
-    let store = AccountStore::new("account_data")?;
+    let data_path = std::env::var("ICHIN_ACCOUNT_DATA_PATH").unwrap_or_else(|_| "account_data".to_string());
+    let store = AccountStore::new(&data_path)?;
     let auth = Arc::new(AuthManager::new(store.clone()));
 
     let state = AppState { store, auth };

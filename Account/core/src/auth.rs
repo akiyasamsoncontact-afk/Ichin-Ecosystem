@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 use anyhow::{anyhow, Result};
 use chrono::{Duration, Utc};
 use ed25519_dalek::SigningKey;
@@ -17,8 +19,25 @@ pub struct AuthManager {
 
 impl AuthManager {
     pub fn new(store: AccountStore) -> Self {
-        let mut seed = [0u8; 32];
-        OsRng.fill_bytes(&mut seed);
+        let seed_path = PathBuf::from(store.base_path()).join("signing_seed.bin");
+        let seed: [u8; 32] = if seed_path.exists() {
+            let data = std::fs::read(&seed_path).unwrap_or_default();
+            if data.len() == 32 {
+                let mut arr = [0u8; 32];
+                arr.copy_from_slice(&data);
+                arr
+            } else {
+                let mut s = [0u8; 32];
+                OsRng.fill_bytes(&mut s);
+                let _ = std::fs::write(&seed_path, s);
+                s
+            }
+        } else {
+            let mut s = [0u8; 32];
+            OsRng.fill_bytes(&mut s);
+            let _ = std::fs::write(&seed_path, s);
+            s
+        };
         let signing_key = SigningKey::from_bytes(&seed);
         Self { signing_key, store }
     }

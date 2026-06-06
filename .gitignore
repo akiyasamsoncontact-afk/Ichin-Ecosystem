@@ -1,7 +1,12 @@
 **/target/
 **/node_modules/
 **/__pycache__/
+**/*.pem
+**/*.key
 *.log
 .DS_Store
 *.deb
+*.db
 search.db
+dist/
+build/

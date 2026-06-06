@@ -10,13 +10,18 @@ use crate::models::*;
 #[derive(Clone)]
 pub struct AccountStore {
     db: Arc<Db>,
+    base_path: String,
 }
 
 impl AccountStore {
     pub fn new(path: &str) -> Result<Self> {
         let db = sled::open(path).context("Failed to open sled database")?;
         info!("Account store opened at {}", path);
-        Ok(Self { db: Arc::new(db) })
+        Ok(Self { db: Arc::new(db), base_path: path.to_string() })
+    }
+
+    pub fn base_path(&self) -> &str {
+        &self.base_path
     }
 
     // --- Users ---
