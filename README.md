@@ -96,10 +96,6 @@ See `.env.example` for all configuration variables.
 | Ichin-CA | `:4891` |
 | Ichin-Daemon | `:4892` |
 
-## Audit
-
-See `Audit_JAN_6.md` for the full 47-issue inventory and remediation status across all subsystems.
-
 ---
 
 *Made in collaboration with AI.*
