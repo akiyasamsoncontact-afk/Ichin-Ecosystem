@@ -2,6 +2,7 @@ use std::sync::Arc;
 
 use axum::extract::{Path as RoutePath, Query, State};
 use axum::http::StatusCode;
+use axum::middleware;
 use axum::response::{Html, IntoResponse, Json, Response};
 use axum::routing::{get, post};
 use axum::Router;
@@ -14,12 +15,16 @@ use crate::protocol::envelope::Envelope;
 use crate::security::keys::KeyPair;
 use crate::security::sign::sign_envelope;
 use crate::storage::mailbox::{Mailbox, Message, Recipient};
+use ichin_account_core::storage::AccountStore;
+
+mod auth;
 
 #[derive(Clone)]
 pub struct AppState {
     pub mailbox: Arc<Mailbox>,
     pub delivery_queue: Arc<DeliveryQueue>,
     pub server_keys: Arc<KeyPair>,
+    pub auth_state: Arc<auth::AuthState>,
 }
 
 #[derive(Deserialize)]
@@ -133,6 +138,8 @@ async fn handle_index() -> Response {
 }
 
 pub fn create_routes(state: AppState) -> Router {
+    let auth_state = state.auth_state.clone();
+
     Router::new()
         .route("/api/status", get(handle_status))
         .route("/api/messages", get(handle_list_messages).post(handle_send_message))
@@ -145,6 +152,10 @@ pub fn create_routes(state: AppState) -> Router {
         .route("/settings.html", get(handle_settings))
         .route("/{*path}", get(handle_static))
         .layer(CorsLayer::permissive())
+        .layer(middleware::from_fn_with_state(
+            auth_state,
+            auth::auth_middleware,
+        ))
         .with_state(state)
 }
 
@@ -351,11 +362,13 @@ pub async fn start_api_server(
     mailbox: Arc<Mailbox>,
     delivery_queue: Arc<DeliveryQueue>,
     server_keys: Arc<KeyPair>,
+    account_store: AccountStore,
 ) -> Result<(), anyhow::Error> {
     let state = AppState {
         mailbox,
         delivery_queue,
         server_keys,
+        auth_state: Arc::new(auth::AuthState { store: account_store }),
     };
 
     let app = create_routes(state);

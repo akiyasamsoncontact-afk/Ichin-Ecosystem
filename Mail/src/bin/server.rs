@@ -1,4 +1,5 @@
 use clap::Parser;
+use ichin_account_core::storage::AccountStore;
 use ichin_mail::api::start_api_server;
 use ichin_mail::delivery::queue::DeliveryQueue;
 use ichin_mail::internal::config::Config;
@@ -114,6 +115,9 @@ async fn main() -> Result<(), anyhow::Error> {
     .await?;
     ichin_server.set_handler(handler);
 
+    // Initialize account store (shared with Account system)
+    let account_store = AccountStore::new("account_data")?;
+
     // Start HTTP API server
     let api_mailbox = mailbox.clone();
     let api_delivery_queue = delivery_queue.clone();
@@ -125,6 +129,7 @@ async fn main() -> Result<(), anyhow::Error> {
             api_mailbox,
             api_delivery_queue,
             api_server_keys,
+            account_store,
         )
         .await
         {

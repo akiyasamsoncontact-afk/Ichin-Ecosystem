@@ -49,6 +49,9 @@ mime_guess = "2"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 
+# Account integration
+ichin-account-core = { path = "../Account/core" }
+
 # Error handling
 thiserror = "2"
 anyhow = "1"

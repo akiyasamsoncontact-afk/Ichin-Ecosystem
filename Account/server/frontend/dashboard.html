@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ichin Account — Dashboard</title>
+    <script src="https://resource.trickle.so/vendor_lib/unpkg/react@18/umd/react.production.min.js"></script>
+    <script src="https://resource.trickle.so/vendor_lib/unpkg/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://resource.trickle.so/vendor_lib/unpkg/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://resource.trickle.so/vendor_lib/unpkg/lucide-static@0.516.0/font/lucide.css" rel="stylesheet">
+
+    <style type="text/tailwindcss">
+    @layer base {
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-primary: #0a0c10;
+            --bg-surface: rgba(22, 26, 34, 0.75);
+            --bg-glass: rgba(255, 255, 255, 0.04);
+            --bg-glass-hover: rgba(255, 255, 255, 0.08);
+            --bg-glass-border: rgba(255, 255, 255, 0.08);
+            --accent: #4f8cff;
+            --accent-glow: rgba(79, 140, 255, 0.25);
+            --text-primary: #f0f2f5;
+            --text-secondary: #8892a0;
+            --text-muted: #5a6270;
+            --danger: #ff4760;
+            --success: #34d399;
+            --warning: #fbbf24;
+            --border-subtle: rgba(255, 255, 255, 0.06);
+        }
+
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+            background-image:
+                radial-gradient(ellipse at 20% 50%, rgba(79, 140, 255, 0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(52, 211, 153, 0.04) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 80%, rgba(251, 191, 36, 0.03) 0%, transparent 50%);
+        }
+    }
+
+    @layer components {
+        .glass {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--bg-glass-border);
+            border-radius: 16px;
+        }
+        .glass-card {
+            background: var(--bg-surface);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--bg-glass-border);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            transition: all 0.2s ease;
+        }
+        .glass-card:hover {
+            border-color: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
+        }
+        .btn {
+            @apply px-5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 flex items-center gap-2;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), #6366f1);
+            color: white;
+            box-shadow: 0 4px 16px var(--accent-glow);
+        }
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 24px var(--accent-glow);
+        }
+        .btn-secondary {
+            background: var(--bg-glass);
+            color: var(--text-primary);
+            border: 1px solid var(--bg-glass-border);
+        }
+        .btn-secondary:hover {
+            background: var(--bg-glass-hover);
+        }
+        .btn-danger {
+            background: rgba(255, 71, 96, 0.15);
+            color: var(--danger);
+            border: 1px solid rgba(255, 71, 96, 0.2);
+        }
+        .btn-danger:hover {
+            background: rgba(255, 71, 96, 0.25);
+        }
+        .input {
+            @apply w-full px-4 py-3 rounded-xl text-sm outline-none transition-all duration-200;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--bg-glass-border);
+            color: var(--text-primary);
+        }
+        .input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+        .label {
+            @apply text-xs font-medium tracking-wide uppercase mb-2 block;
+            color: var(--text-secondary);
+        }
+        .stat-value {
+            @apply text-2xl font-bold;
+        }
+        .stat-label {
+            @apply text-sm;
+            color: var(--text-secondary);
+        }
+        .nav-item {
+            @apply flex items-center gap-3 px-4 py-2.5 rounded-xl cursor-pointer transition-all duration-200;
+            color: var(--text-secondary);
+        }
+        .nav-item:hover {
+            background: var(--bg-glass);
+            color: var(--text-primary);
+        }
+        .nav-item.active {
+            background: linear-gradient(135deg, rgba(79, 140, 255, 0.12), rgba(99, 102, 241, 0.08));
+            color: var(--accent);
+            border: 1px solid rgba(79, 140, 255, 0.15);
+        }
+        .badge {
+            @apply text-[10px] font-bold px-2 py-0.5 rounded-full;
+        }
+        .avatar {
+            @apply w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold;
+            background: linear-gradient(135deg, var(--accent), #6366f1);
+        }
+        .avatar-lg {
+            @apply w-16 h-16 rounded-full flex items-center justify-center text-xl font-bold;
+            background: linear-gradient(135deg, var(--accent), #6366f1);
+        }
+        .toggle {
+            @apply relative inline-flex h-6 w-11 rounded-full transition-colors duration-200 cursor-pointer;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .toggle.active {
+            background: var(--accent);
+        }
+        .toggle::after {
+            content: '';
+            @apply absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white transition-transform duration-200;
+        }
+        .toggle.active::after {
+            transform: translateX(1.25rem);
+        }
+        .loading-spinner {
+            @apply w-5 h-5 border-2 rounded-full;
+            border-color: var(--text-muted);
+            border-top-color: var(--accent);
+            animation: spin 0.6s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .pill {
+            @apply px-3 py-1 rounded-full text-xs font-medium;
+        }
+        .pill-success { background: rgba(52, 211, 153, 0.15); color: var(--success); }
+        .pill-danger { background: rgba(255, 71, 96, 0.15); color: var(--danger); }
+        .pill-warning { background: rgba(251, 191, 36, 0.15); color: var(--warning); }
+        .pill-neutral { background: rgba(255, 255, 255, 0.06); color: var(--text-secondary); }
+    }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    const API = {
+        async getToken() { return localStorage.getItem('ichin_session_token'); },
+        async request(method, path, body) {
+            const token = await this.getToken();
+            const headers = { 'Content-Type': 'application/json' };
+            if (token) headers['Authorization'] = `Bearer ${token}`;
+            const res = await fetch(path, { method, headers, body: body ? JSON.stringify(body) : undefined });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Request failed');
+            return data;
+        },
+        get(path) { return this.request('GET', path); },
+        post(path, body) { return this.request('POST', path, body); },
+        put(path, body) { return this.request('PUT', path, body); },
+        del(path) { return this.request('DELETE', path); },
+    };
+
+    // --- Views ---
+
+    function LoginView({ onLogin }) {
+        const [username, setUsername] = useState('');
+        const [step, setStep] = useState('register');
+        const [displayName, setDisplayName] = useState('');
+        const [email, setEmail] = useState('');
+        const [totpCode, setTotpCode] = useState('');
+        const [recoveryCode, setRecoveryCode] = useState('');
+        const [loading, setLoading] = useState(false);
+        const [error, setError] = useState('');
+
+        const handleRegister = async () => {
+            setLoading(true); setError('');
+            try {
+                const res = await API.post('/api/auth/register', { username, display_name: displayName, email });
+                localStorage.setItem('ichin_session_token', res.session_token);
+                localStorage.setItem('recovery_codes', JSON.stringify(res.recovery_codes));
+                onLogin();
+            } catch (e) { setError(e.message); } finally { setLoading(false); }
+        };
+
+        const handleLogin = async () => {
+            setLoading(true); setError('');
+            try {
+                let res;
+                if (totpCode) {
+                    res = await API.post('/api/auth/login/totp', { username, code: totpCode, user_agent: navigator.userAgent });
+                } else if (recoveryCode) {
+                    res = await API.post('/api/auth/login/recovery', { username, code: recoveryCode, user_agent: navigator.userAgent });
+                } else {
+                    return setError('Enter a TOTP code or recovery code');
+                }
+                localStorage.setItem('ichin_session_token', res.session_token);
+                onLogin();
+            } catch (e) { setError(e.message); } finally { setLoading(false); }
+        };
+
+        return (
+            <div className="min-h-screen flex items-center justify-center p-4">
+                <div className="glass-card p-8 w-full max-w-md">
+                    <div className="flex items-center gap-3 mb-8">
+                        <div className="avatar-lg">I</div>
+                        <div>
+                            <h1 className="text-xl font-bold">Ichin Account</h1>
+                            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Sign in to your account</p>
+                        </div>
+                    </div>
+
+                    <div className="flex gap-2 mb-6">
+                        <button onClick={() => { setStep('register'); setError(''); }}
+                            className={`btn flex-1 ${step === 'register' ? 'btn-primary' : 'btn-secondary'}`}>Register</button>
+                        <button onClick={() => { setStep('login'); setError(''); }}
+                            className={`btn flex-1 ${step === 'login' ? 'btn-primary' : 'btn-secondary'}`}>Sign In</button>
+                    </div>
+
+                    {error && (
+                        <div className="glass p-3 mb-4 text-sm" style={{ borderColor: 'rgba(255,71,96,0.3)', color: 'var(--danger)' }}>{error}</div>
+                    )}
+
+                    {step === 'register' ? (
+                        <div className="space-y-4">
+                            <div>
+                                <label className="label">Username</label>
+                                <input className="input" placeholder="yourname" value={username} onChange={e => setUsername(e.target.value)} />
+                            </div>
+                            <div>
+                                <label className="label">Display Name</label>
+                                <input className="input" placeholder="Your Name" value={displayName} onChange={e => setDisplayName(e.target.value)} />
+                            </div>
+                            <div>
+                                <label className="label">Email</label>
+                                <input className="input" type="email" placeholder="you@ichin" value={email} onChange={e => setEmail(e.target.value)} />
+                            </div>
+                            <button onClick={handleRegister} disabled={loading} className="btn btn-primary w-full justify-center">
+                                {loading ? <div className="loading-spinner"></div> : 'Create Account'}
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="space-y-4">
+                            <div>
+                                <label className="label">Username</label>
+                                <input className="input" placeholder="yourname" value={username} onChange={e => setUsername(e.target.value)} />
+                            </div>
+                            <div>
+                                <label className="label">TOTP Code (or leave blank for recovery)</label>
+                                <input className="input" placeholder="000000" value={totpCode} onChange={e => setTotpCode(e.target.value)} />
+                            </div>
+                            <div>
+                                <label className="label">Recovery Code</label>
+                                <input className="input" placeholder="XXXXXX-XXXXXX" value={recoveryCode} onChange={e => setRecoveryCode(e.target.value)} />
+                            </div>
+                            <button onClick={handleLogin} disabled={loading} className="btn btn-primary w-full justify-center">
+                                {loading ? <div className="loading-spinner"></div> : 'Sign In'}
+                            </button>
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
+    }
+
+    function Dashboard({ onLogout }) {
+        const [activeTab, setActiveTab] = useState('overview');
+        const [user, setUser] = useState(null);
+        const [sessions, setSessions] = useState([]);
+        const [devices, setDevices] = useState([]);
+        const [history, setHistory] = useState([]);
+        const [storage, setStorage] = useState(null);
+        const [settings, setSettings] = useState(null);
+        const [loading, setLoading] = useState(true);
+        const [totpUrl, setTotpUrl] = useState('');
+        const [totpVerifyCode, setTotpVerifyCode] = useState('');
+        const [totpMsg, setTotpMsg] = useState('');
+
+        useEffect(() => { loadData(); }, []);
+
+        const loadData = async () => {
+            setLoading(true);
+            try {
+                const [u, s, d, h, st, se] = await Promise.all([
+                    API.get('/api/account/me'),
+                    API.get('/api/account/sessions'),
+                    API.get('/api/account/devices'),
+                    API.get('/api/account/login-history'),
+                    API.get('/api/account/storage'),
+                    API.get('/api/account/settings'),
+                ]);
+                setUser(u); setSessions(s); setDevices(d); setHistory(h); setStorage(st); setSettings(se);
+            } catch (e) { console.error(e); } finally { setLoading(false); }
+        };
+
+        const handleLogout = async () => {
+            await API.post('/api/auth/logout');
+            localStorage.removeItem('ichin_session_token');
+            onLogout();
+        };
+
+        const handleDeleteSession = async (id) => {
+            await API.del(`/api/account/sessions/${id}`);
+            loadData();
+        };
+
+        const handleDeleteDevice = async (id) => {
+            await API.del(`/api/account/devices/${id}`);
+            loadData();
+        };
+
+        const handleSetupTOTP = async () => {
+            try {
+                const res = await API.get('/api/account/totp/setup');
+                setTotpUrl(res.otpauth_url);
+                setTotpMsg('');
+            } catch (e) { setTotpMsg(e.message); }
+        };
+
+        const handleVerifyTOTP = async () => {
+            try {
+                await API.post('/api/account/totp/verify', { code: totpVerifyCode });
+                setTotpMsg('TOTP enabled successfully');
+                setTotpVerifyCode('');
+                loadData();
+            } catch (e) { setTotpMsg(e.message); }
+        };
+
+        const handleUpdateSettings = async (updates) => {
+            const res = await API.put('/api/account/settings', updates);
+            setSettings(res);
+        };
+
+        if (!user) return <div className="min-h-screen flex items-center justify-center"><div className="loading-spinner" style={{ width: 32, height: 32 }}></div></div>;
+
+        const navItems = [
+            { id: 'overview', icon: 'icon-layout-dashboard', label: 'Overview' },
+            { id: 'security', icon: 'icon-shield', label: 'Security' },
+            { id: 'sessions', icon: 'icon-globe', label: 'Sessions' },
+            { id: 'devices', icon: 'icon-monitor', label: 'Devices' },
+            { id: 'storage', icon: 'icon-database', label: 'Storage' },
+            { id: 'settings', icon: 'icon-settings', label: 'Settings' },
+        ];
+
+        const activeSessions = sessions.filter(s => s.is_active).length;
+
+        return (
+            <div className="min-h-screen flex">
+                {/* Sidebar */}
+                <div className="w-64 p-4 flex flex-col gap-1 border-r" style={{ borderColor: 'var(--border-subtle)' }}>
+                    <div className="flex items-center gap-3 px-4 py-4 mb-4">
+                        <div className="avatar">I</div>
+                        <div>
+                            <div className="font-semibold text-sm">{user.display_name}</div>
+                            <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>@{user.username}</div>
+                        </div>
+                    </div>
+                    {navItems.map(item => (
+                        <div key={item.id}
+                            className={`nav-item ${activeTab === item.id ? 'active' : ''}`}
+                            onClick={() => setActiveTab(item.id)}>
+                            <i className={item.icon}></i>
+                            <span>{item.label}</span>
+                        </div>
+                    ))}
+                    <div className="flex-1"></div>
+                    <button onClick={handleLogout} className="nav-item" style={{ color: 'var(--danger)' }}>
+                        <i className="icon-log-out"></i>
+                        <span>Sign Out</span>
+                    </button>
+                </div>
+
+                {/* Main content */}
+                <div className="flex-1 p-8 overflow-y-auto" style={{ maxHeight: '100vh' }}>
+                    {loading ? (
+                        <div className="flex items-center justify-center h-64"><div className="loading-spinner" style={{ width: 32, height: 32 }}></div></div>
+                    ) : (
+                        <>
+                            {activeTab === 'overview' && (
+                                <div className="space-y-6">
+                                    <h2 className="text-2xl font-bold">Overview</h2>
+                                    <div className="grid grid-cols-4 gap-4">
+                                        <div className="glass-card p-5"><div className="stat-value">{sessions.length}</div><div className="stat-label">Total Sessions</div></div>
+                                        <div className="glass-card p-5"><div className="stat-value">{activeSessions}</div><div className="stat-label">Active Now</div></div>
+                                        <div className="glass-card p-5"><div className="stat-value">{devices.length}</div><div className="stat-label">Devices</div></div>
+                                        <div className="glass-card p-5">
+                                            <div className="stat-value">{storage ? `${(storage.used_bytes / 1048576).toFixed(1)}` : '0'}</div>
+                                            <div className="stat-label">MB Used</div>
+                                        </div>
+                                    </div>
+
+                                    <div className="glass-card p-6">
+                                        <h3 className="font-semibold mb-4">Recent Login Activity</h3>
+                                        {history.length === 0 ? (
+                                            <p style={{ color: 'var(--text-secondary)' }}>No login history yet</p>
+                                        ) : (
+                                            <div className="space-y-3">
+                                                {history.slice(0, 10).map((entry, i) => (
+                                                    <div key={i} className="flex items-center justify-between text-sm py-2 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
+                                                        <div className="flex items-center gap-3">
+                                                            <span className={entry.success ? 'pill pill-success' : 'pill pill-danger'}>
+                                                                {entry.success ? 'Success' : 'Failed'}
+                                                            </span>
+                                                            <span style={{ color: 'var(--text-secondary)' }}>{entry.ip_address}</span>
+                                                        </div>
+                                                        <div className="flex items-center gap-3">
+                                                            <span className="pill pill-neutral">{entry.method}</span>
+                                                            <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{new Date(entry.timestamp).toLocaleString()}</span>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+
+                            {activeTab === 'security' && (
+                                <div className="space-y-6">
+                                    <h2 className="text-2xl font-bold">Security Center</h2>
+
+                                    <div className="glass-card p-6 space-y-4">
+                                        <h3 className="font-semibold">Two-Factor Authentication</h3>
+                                        {user.has_totp ? (
+                                            <p style={{ color: 'var(--success)' }} className="flex items-center gap-2">
+                                                <i className="icon-check-circle"></i> TOTP is enabled
+                                            </p>
+                                        ) : (
+                                            <div className="space-y-3">
+                                                <p style={{ color: 'var(--text-secondary)' }}>Add an extra layer of security with time-based one-time passwords.</p>
+                                                {!totpUrl ? (
+                                                    <button onClick={handleSetupTOTP} className="btn btn-primary">Enable 2FA</button>
+                                                ) : (
+                                                    <div className="space-y-3">
+                                                        <div className="glass p-4 text-xs" style={{ wordBreak: 'break-all' }}>
+                                                            <p className="mb-2 font-medium">Scan this with your authenticator app:</p>
+                                                            <p style={{ color: 'var(--text-secondary)' }}>{totpUrl}</p>
+                                                        </div>
+                                                        <div className="flex gap-2">
+                                                            <input className="input w-32" placeholder="000000" value={totpVerifyCode} onChange={e => setTotpVerifyCode(e.target.value)} />
+                                                            <button onClick={handleVerifyTOTP} className="btn btn-primary">Verify</button>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                                {totpMsg && <p className="text-sm" style={{ color: totpMsg.includes('success') ? 'var(--success)' : 'var(--danger)' }}>{totpMsg}</p>}
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div className="glass-card p-6 space-y-3">
+                                        <h3 className="font-semibold">Passkeys</h3>
+                                        {user.has_passkeys ? (
+                                            <div className="space-y-2">
+                                                {user.passkey_credentials?.map((pk, i) => (
+                                                    <div key={i} className="flex items-center justify-between py-2 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
+                                                        <span>{pk.name || `Passkey ${i + 1}`}</span>
+                                                        <span className="pill pill-success">Registered</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <p style={{ color: 'var(--text-secondary)' }}>No passkeys registered yet. Use the API to register one.</p>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+
+                            {activeTab === 'sessions' && (
+                                <div className="space-y-6">
+                                    <h2 className="text-2xl font-bold">Active Sessions</h2>
+                                    <div className="space-y-3">
+                                        {sessions.length === 0 ? (
+                                            <p style={{ color: 'var(--text-secondary)' }}>No sessions found</p>
+                                        ) : sessions.map(s => (
+                                            <div key={s.id} className="glass-card p-5 flex items-center justify-between">
+                                                <div className="flex items-center gap-4">
+                                                    <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.04)' }}>
+                                                        <i className="icon-globe" style={{ color: 'var(--text-secondary)' }}></i>
+                                                    </div>
+                                                    <div>
+                                                        <div className="text-sm font-medium">{s.user_agent || 'Unknown device'}</div>
+                                                        <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                                                            {s.ip_address} &middot; {new Date(s.last_accessed_at).toLocaleString()}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center gap-3">
+                                                    <span className={`pill ${s.is_active ? 'pill-success' : 'pill-danger'}`}>
+                                                        {s.is_active ? 'Active' : 'Inactive'}
+                                                    </span>
+                                                    {s.is_active && (
+                                                        <button onClick={() => handleDeleteSession(s.id)} className="btn btn-danger text-xs px-3 py-1">Revoke</button>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {activeTab === 'devices' && (
+                                <div className="space-y-6">
+                                    <h2 className="text-2xl font-bold">Connected Devices</h2>
+                                    <div className="space-y-3">
+                                        {devices.length === 0 ? (
+                                            <p style={{ color: 'var(--text-secondary)' }}>No devices connected</p>
+                                        ) : devices.map(d => (
+                                            <div key={d.id} className="glass-card p-5 flex items-center justify-between">
+                                                <div className="flex items-center gap-4">
+                                                    <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.04)' }}>
+                                                        <i className="icon-monitor" style={{ color: 'var(--text-secondary)' }}></i>
+                                                    </div>
+                                                    <div>
+                                                        <div className="text-sm font-medium">{d.name}</div>
+                                                        <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                                                            {d.device_type} &middot; {d.last_synced_at ? `Last sync: ${new Date(d.last_synced_at).toLocaleString()}` : 'Never synced'}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <button onClick={() => handleDeleteDevice(d.id)} className="btn btn-danger text-xs px-3 py-1">Remove</button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {activeTab === 'storage' && (
+                                <div className="space-y-6">
+                                    <h2 className="text-2xl font-bold">Storage Usage</h2>
+                                    {storage && (
+                                        <div className="glass-card p-6 space-y-4">
+                                            <div>
+                                                <div className="flex justify-between text-sm mb-2">
+                                                    <span style={{ color: 'var(--text-secondary)' }}>Used</span>
+                                                    <span className="font-medium">{(storage.used_bytes / 1048576).toFixed(1)} MB / {(storage.total_bytes / 1073741824).toFixed(1)} GB</span>
+                                                </div>
+                                                <div className="h-2 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
+                                                    <div className="h-full rounded-full transition-all duration-500"
+                                                        style={{ width: `${Math.min(100, (storage.used_bytes / storage.total_bytes) * 100)}%`, background: 'linear-gradient(90deg, var(--accent), #6366f1)' }}>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <div className="glass p-4">
+                                                    <div className="text-lg font-bold">{(storage.mail_bytes / 1048576).toFixed(1)} MB</div>
+                                                    <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>Mail</div>
+                                                </div>
+                                                <div className="glass p-4">
+                                                    <div className="text-lg font-bold">{(storage.sync_bytes / 1048576).toFixed(1)} MB</div>
+                                                    <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>Browser Sync</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                            {activeTab === 'settings' && (
+                                <div className="space-y-6">
+                                    <h2 className="text-2xl font-bold">Account Settings</h2>
+
+                                    <div className="glass-card p-6 space-y-4">
+                                        <h3 className="font-semibold">Profile</h3>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="label">Display Name</label>
+                                                <input className="input" value={user.display_name}
+                                                    onBlur={e => API.put('/api/account/profile', { display_name: e.target.value }).then(loadData)}
+                                                    onChange={e => setUser({ ...user, display_name: e.target.value })} />
+                                            </div>
+                                            <div>
+                                                <label className="label">Email</label>
+                                                <input className="input" value={user.email} disabled style={{ opacity: 0.5 }} />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {settings && (
+                                        <div className="glass-card p-6 space-y-4">
+                                            <h3 className="font-semibold">Preferences</h3>
+                                            <div className="space-y-4">
+                                                <div className="flex items-center justify-between">
+                                                    <div>
+                                                        <div className="text-sm font-medium">Theme</div>
+                                                        <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>Dark / Light</div>
+                                                    </div>
+                                                    <div className="flex gap-2">
+                                                        {['Dark', 'Light'].map(t => (
+                                                            <button key={t}
+                                                                onClick={() => handleUpdateSettings({ theme: t.toLowerCase() })}
+                                                                className={`btn text-xs px-3 py-1 ${settings.theme === t.toLowerCase() ? 'btn-primary' : 'btn-secondary'}`}>
+                                                                {t}
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center justify-between">
+                                                    <div>
+                                                        <div className="text-sm font-medium">Language</div>
+                                                    </div>
+                                                    <select className="input w-auto" value={settings.language}
+                                                        onChange={e => handleUpdateSettings({ language: e.target.value })}>
+                                                        <option value="en">English</option>
+                                                        <option value="es">Español</option>
+                                                        <option value="fr">Français</option>
+                                                        <option value="de">Deutsch</option>
+                                                    </select>
+                                                </div>
+                                                <div className="flex items-center justify-between">
+                                                    <div>
+                                                        <div className="text-sm font-medium">Email Notifications</div>
+                                                    </div>
+                                                    <div className={`toggle ${settings.email_notifications ? 'active' : ''}`}
+                                                        onClick={() => handleUpdateSettings({ email_notifications: !settings.email_notifications })}></div>
+                                                </div>
+                                                <div className="flex items-center justify-between">
+                                                    <div>
+                                                        <div className="text-sm font-medium">Auto Sync</div>
+                                                    </div>
+                                                    <div className={`toggle ${settings.auto_sync ? 'active' : ''}`}
+                                                        onClick={() => handleUpdateSettings({ auto_sync: !settings.auto_sync })}></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    <div className="glass-card p-6 space-y-4" style={{ borderColor: 'rgba(255,71,96,0.2)' }}>
+                                        <h3 className="font-semibold" style={{ color: 'var(--danger)' }}>Danger Zone</h3>
+                                        <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Revoke all sessions and sign out everywhere.</p>
+                                        <button onClick={async () => {
+                                            const sessions = await API.get('/api/account/sessions');
+                                            for (const s of sessions) { await API.del(`/api/account/sessions/${s.id}`); }
+                                            localStorage.removeItem('ichin_session_token');
+                                            onLogout();
+                                        }} className="btn btn-danger">Revoke All Sessions</button>
+                                    </div>
+                                </div>
+                            )}
+                        </>
+                    )}
+                </div>
+            </div>
+        );
+    }
+
+    function App() {
+        const [loggedIn, setLoggedIn] = useState(!!localStorage.getItem('ichin_session_token'));
+        return loggedIn ? <Dashboard onLogout={() => setLoggedIn(false)} /> : <LoginView onLogin={() => setLoggedIn(true)} />;
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+    </script>
+</body>
+</html>
