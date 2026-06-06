@@ -58,3 +58,4 @@ See `INICHIN_AUDIT_REPORT.md` for full audit details and `propmt check .md` for 
 ## Download
 
 - **[ichin-browser v1.0.0 (.deb)](https://github.com/akiyasamsoncontact-afk/Internet/releases/tag/v1.0.0)** — Debian package for the Ichin Browser.
+- **[ichin-mail v0.1.0 (.deb)](https://github.com/akiyasamsoncontact-afk/Internet/releases/tag/mail-v0.1.0)** — Debian package for Ichin Mail (server, send, receive, gateway).
