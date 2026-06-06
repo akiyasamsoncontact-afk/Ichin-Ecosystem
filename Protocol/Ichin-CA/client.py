@@ -7,10 +7,13 @@ ENCODING = "utf-8"
 CA_PORT = 4891
 
 
-def _ssl_context():
+def _ssl_context(cafile=None):
     ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
-    ctx.check_hostname = False
-    ctx.verify_mode = ssl.CERT_NONE
+    if cafile and os.path.exists(cafile):
+        ctx.load_verify_locations(cafile)
+    else:
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
     ctx.minimum_version = ssl.TLSVersion.TLSv1_3
     return ctx
 

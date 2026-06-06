@@ -1,0 +1,36 @@
+[class^="icon-"], [class*=" icon-"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1em;
+  height: 1em;
+  line-height: 1;
+  speak: never;
+}
+
+.icon-arrow-left::before { content: "\2190"; }
+.icon-arrow-right::before { content: "\2192"; }
+.icon-refresh-cw::before { content: "\21BB"; }
+.icon-lock::before { content: "\1F512"; font-size: 0.8em; }
+.icon-columns-2::before { content: "\25F0"; }
+.icon-more-vertical::before { content: "\22EE"; }
+.icon-panel-left::before { content: "\25E7"; }
+.icon-x::before { content: "\2715"; }
+.icon-plus::before { content: "\002B"; }
+.icon-search::before { content: "\2315"; }
+.icon-settings::before { content: "\2699"; }
+.icon-clock::before { content: "\23F0"; }
+.icon-square::before { content: "\25A1"; }
+.icon-github::before { content: "\29CA"; }
+.icon-file-text::before { content: "\1F4C4"; font-size: 0.85em; }
+.icon-layers::before { content: "\2750"; }
+.icon-pen-tool::before { content: "\270E"; }
+.icon-triangle::before { content: "\25B2"; }
+.icon-code::before { content: "\3C"; font-weight: bold; }
+.icon-book::before { content: "\1F4D6"; font-size: 0.85em; }
+.icon-at-sign::before { content: "\0040"; }
+.icon-home::before { content: "\2302"; }
+.icon-briefcase::before { content: "\1F4BC"; font-size: 0.85em; }
+.icon-book-open::before { content: "\1F4D7"; font-size: 0.85em; }
+.icon-users::before { content: "\263C"; }
+.icon-pin::before { content: "\2693"; font-size: 0.8em; }

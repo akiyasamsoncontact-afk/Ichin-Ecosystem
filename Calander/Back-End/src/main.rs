@@ -38,11 +38,15 @@ async fn main() {
 
     let api_routes = Router::new()
         .route("/api/tasks", get(handlers::get_tasks).post(handlers::create_task))
-        .route("/api/tasks/{id}", put(handlers::update_task).delete(handlers::delete_task))
+        .route("/api/tasks/:id", put(handlers::update_task).delete(handlers::delete_task))
         .layer(cors.clone())
         .with_state(db);
 
+    let health_routes = Router::new()
+        .route("/health", get(|| async { axum::Json(serde_json::json!({"status": "ok"})) }));
+
     let app = Router::new()
+        .merge(health_routes)
         .nest("", api_routes)
         .layer(TraceLayer::new_for_http());
 

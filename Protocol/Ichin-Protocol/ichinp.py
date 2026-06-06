@@ -79,14 +79,17 @@ class ICHINResponse:
         )
 
 
-def create_ssl_context(server_side=False, certfile=None, keyfile=None):
+def create_ssl_context(server_side=False, certfile=None, keyfile=None, cafile=None):
     if server_side:
         ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
         ctx.load_cert_chain(certfile, keyfile)
     else:
         ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
-        ctx.check_hostname = False
-        ctx.verify_mode = ssl.CERT_NONE
+        if cafile and os.path.exists(cafile):
+            ctx.load_verify_locations(cafile)
+        else:
+            ctx.check_hostname = False
+            ctx.verify_mode = ssl.CERT_NONE
     ctx.minimum_version = ssl.TLSVersion.TLSv1_3
     return ctx
 

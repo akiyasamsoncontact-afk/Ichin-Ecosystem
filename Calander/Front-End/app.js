@@ -14,14 +14,17 @@ function App() {
     const [tasks, setTasks] = React.useState([]);
     const [loading, setLoading] = React.useState(true);
     const [currentDate, setCurrentDate] = React.useState(new Date());
-    const [calendarView, setCalendarView] = React.useState('month');
+    const [calendarView, setCalendarView] = React.useState(Storage.getView());
     const [sidebarView, setSidebarView] = React.useState('all');
     const [selectedTask, setSelectedTask] = React.useState(null);
     const [modalOpen, setModalOpen] = React.useState(false);
     const [modalDate, setModalDate] = React.useState('');
     const [cmdPaletteOpen, setCmdPaletteOpen] = React.useState(false);
+    const [connected, setConnected] = React.useState(true);
 
     React.useEffect(() => {
+      startPeriodicSync();
+      onStatusChange(setConnected);
       api.getTasks().then(data => {
         setTasks(data);
         setLoading(false);
@@ -29,9 +32,11 @@ function App() {
         setTasks(Storage.getTasks());
         setLoading(false);
       });
+      return () => stopPeriodicSync();
     }, []);
 
     React.useEffect(() => { document.documentElement.classList.toggle('dark', theme === 'dark'); Storage.saveTheme(theme); }, [theme]);
+    React.useEffect(() => { Storage.saveView(calendarView); }, [calendarView]);
     React.useEffect(() => {
       const handleKey = (e) => { if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); setCmdPaletteOpen(true); } };
       window.addEventListener('keydown', handleKey);
@@ -85,9 +90,9 @@ function App() {
 
     return (
       <div className="flex h-screen bg-[var(--light-bg)] dark:bg-[var(--dark-bg)]" data-name="app" data-file="app.js">
-        <Sidebar activeView={sidebarView} onViewChange={setSidebarView} onNewTask={() => setModalOpen(true)} theme={theme} onThemeToggle={toggleTheme} />
+        <Sidebar activeView={sidebarView} onViewChange={setSidebarView} onNewTask={() => setModalOpen(true)} theme={theme} onThemeToggle={toggleTheme} connected={connected} />
         <main className="flex-1 flex flex-col overflow-hidden">
-          <CalendarHeader currentDate={currentDate} view={calendarView} onViewChange={setCalendarView} onNavigate={navigate} onToday={() => setCurrentDate(new Date())} />
+          <CalendarHeader currentDate={currentDate} view={calendarView} onViewChange={setCalendarView} onNavigate={navigate} onToday={() => setCurrentDate(new Date())} connected={connected} />
           {calendarView === 'month' && <MonthView currentDate={currentDate} tasks={tasks} onDateClick={handleDateClick} onTaskClick={setSelectedTask} />}
           {calendarView === 'week' && <WeekView currentDate={currentDate} tasks={tasks} onDateClick={handleDateClick} onTaskClick={setSelectedTask} />}
           {calendarView === 'day' && <DayView currentDate={currentDate} tasks={tasks} onTaskClick={setSelectedTask} />}

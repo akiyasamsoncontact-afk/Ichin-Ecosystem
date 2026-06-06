@@ -12,6 +12,7 @@ use axum::{
     Json, Router,
 };
 use tower_http::cors::{Any, CorsLayer};
+use tracing::info;
 
 use models::{Page, SearchQuery, SearchResponse, Site};
 use search::SearchEngine;
@@ -31,6 +32,13 @@ async fn handle_search(
 
 #[tokio::main]
 async fn main() {
+    tracing_subscriber::fmt()
+        .with_env_filter(
+            tracing_subscriber::EnvFilter::try_from_default_env()
+                .unwrap_or_else(|_| "search_engine=info".into()),
+        )
+        .init();
+
     let db = db::Database::new("search.db").expect("Failed to open database");
 
     let mut engine = SearchEngine::new(db);
@@ -145,6 +153,7 @@ async fn main() {
         .allow_headers(Any);
 
     let app = Router::new()
+        .route("/health", get(|| async { Json(serde_json::json!({"status": "ok"})) }))
         .route("/search", get(handle_search))
         .layer(cors)
         .with_state(search_engine);
@@ -153,6 +162,6 @@ async fn main() {
         .await
         .expect("Failed to bind to port 3001");
 
-    println!("Search engine running on http://0.0.0.0:3001");
+    info!("Search engine running on http://0.0.0.0:3001");
     axum::serve(listener, app).await.expect("Server error");
 }

@@ -9,7 +9,7 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 CERT_FILE = os.path.join(SCRIPT_DIR, "..", "shared", "cert.pem")
 KEY_FILE = os.path.join(SCRIPT_DIR, "..", "shared", "key.pem")
 APPS_DIR = os.path.join(SCRIPT_DIR, "apps")
-DEFAULT_PORT = 4889
+DEFAULT_PORT = 4892
 
 ENCODING = "utf-8"
 

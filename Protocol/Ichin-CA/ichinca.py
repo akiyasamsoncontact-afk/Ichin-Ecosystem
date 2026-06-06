@@ -229,8 +229,12 @@ class IchinDNSClient:
         import ssl
 
         ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
-        ctx.check_hostname = False
-        ctx.verify_mode = ssl.CERT_NONE
+        cafile = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "shared", "cert.pem")
+        if os.path.exists(cafile):
+            ctx.load_verify_locations(cafile)
+        else:
+            ctx.check_hostname = False
+            ctx.verify_mode = ssl.CERT_NONE
         ctx.minimum_version = ssl.TLSVersion.TLSv1_3
 
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

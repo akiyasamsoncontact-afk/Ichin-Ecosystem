@@ -10,7 +10,14 @@ import threading
 DEFAULT_PORT = 4890
 ROOT_ZONE = ".ichin"
 DEFAULT_TTL = 3600
-SECRET_KEY = os.environ.get("ICHINDNS_SECRET", "ichin-dns-dev-secret")
+_UNSET = object()
+SECRET_KEY = os.environ.get("ICHINDNS_SECRET", _UNSET)
+
+def get_secret_key():
+    val = os.environ.get("ICHINDNS_SECRET")
+    if not val:
+        raise RuntimeError("ICHINDNS_SECRET environment variable must be set")
+    return val
 
 VALID_TYPES = {"A", "AAAA", "CNAME", "TXT", "ICHIN"}
 
@@ -174,12 +181,14 @@ class Resolver:
         return "NXDOMAIN", []
 
 
-def sign_response(data, secret=SECRET_KEY):
+def sign_response(data, secret=None):
+    secret = secret or get_secret_key()
     payload = json.dumps(data, separators=(",", ":"))
     sig = hmac.new(secret.encode(), payload.encode(), hashlib.sha256).hexdigest()
     return sig
 
 
-def verify_signature(data, signature, secret=SECRET_KEY):
+def verify_signature(data, signature, secret=None):
+    secret = secret or get_secret_key()
     expected = sign_response(data, secret)
     return hmac.compare_digest(expected, signature)

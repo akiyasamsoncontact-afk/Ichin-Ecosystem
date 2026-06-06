@@ -1236,7 +1236,10 @@ fn to_user_response(user: &User) -> UserResponse {
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     tracing_subscriber::fmt()
-        .with_env_filter("ichin_account=trace,tower_http=debug")
+        .with_env_filter(
+            tracing_subscriber::EnvFilter::try_from_default_env()
+                .unwrap_or_else(|_| "ichin_account=trace,tower_http=debug".into()),
+        )
         .init();
 
     let store = AccountStore::new("account_data")?;
@@ -1282,8 +1285,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .layer(CorsLayer::permissive())
         .with_state(state);
 
-    let listener = tokio::net::TcpListener::bind("127.0.0.1:8080").await?;
-    info!("Ichin Account server listening on http://127.0.0.1:8080");
+    let listener = tokio::net::TcpListener::bind("127.0.0.1:8081").await?;
+    info!("Ichin Account server listening on http://127.0.0.1:8081");
     axum::serve(listener, app).await?;
 
     Ok(())
