@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CalenTask - Modern Calendar & To-Do</title>
+    <meta name="description" content="A minimal, productivity-focused calendar and task management app">
+    <meta name="keywords" content="calendar, todo, tasks, productivity, schedule">
+    <meta property="og:title" content="CalenTask - Modern Calendar & To-Do">
+    <meta property="og:description" content="A minimal, productivity-focused calendar and task management app">
+    <meta name="twitter:title" content="CalenTask - Modern Calendar & To-Do">
+    <meta name="twitter:description" content="A minimal, productivity-focused calendar and task management app">
+
+    <script src="https://resource.trickle.so/vendor_lib/unpkg/react@18/umd/react.production.min.js"></script>
+    <script src="https://resource.trickle.so/vendor_lib/unpkg/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://resource.trickle.so/vendor_lib/unpkg/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://resource.trickle.so/vendor_lib/unpkg/lucide-static@0.516.0/font/lucide.css" rel="stylesheet">
+    <link href="styles/theme.css" rel="stylesheet">
+</head>
+<body class="bg-light-bg dark:bg-dark-bg transition-colors duration-300">
+    <div id="root"></div>
+    <script type="text/babel" src="utils/storage.js"></script>
+    <script type="text/babel" src="utils/dateUtils.js"></script>
+    <script type="text/babel" src="components/Sidebar.js"></script>
+    <script type="text/babel" src="components/CalendarHeader.js"></script>
+    <script type="text/babel" src="components/MonthView.js"></script>
+    <script type="text/babel" src="components/WeekView.js"></script>
+    <script type="text/babel" src="components/DayView.js"></script>
+    <script type="text/babel" src="components/TaskPanel.js"></script>
+    <script type="text/babel" src="components/TaskItem.js"></script>
+    <script type="text/babel" src="components/TaskModal.js"></script>
+    <script type="text/babel" src="components/CommandPalette.js"></script>
+    <script type="text/babel" src="app.js"></script>
+</body>
+</html>

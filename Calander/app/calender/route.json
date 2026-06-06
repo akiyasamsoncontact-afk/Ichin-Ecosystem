@@ -1,0 +1,9 @@
+{
+  "routes": [
+    {"method": "GET", "path": "/calender/health", "handler": "health"},
+    {"method": "GET", "path": "/calender/tasks", "handler": "get_tasks"},
+    {"method": "POST", "path": "/calender/tasks", "handler": "create_task"},
+    {"method": "PUT", "path": "/calender/tasks/:id", "handler": "update_task"},
+    {"method": "DELETE", "path": "/calender/tasks/:id", "handler": "delete_task"}
+  ]
+}

@@ -1,0 +1,38 @@
+:root {
+    --light-bg: #F8F9FB;
+    --dark-bg: #111315;
+    --accent: #4F8CFF;
+    --accent-light: rgba(79, 140, 255, 0.1);
+    --success: #34C759;
+    --warning: #FFB84D;
+    --error: #FF6B6B;
+    --glass-light: rgba(255, 255, 255, 0.7);
+    --glass-dark: rgba(30, 32, 36, 0.7);
+    --border-light: rgba(0, 0, 0, 0.06);
+    --border-dark: rgba(255, 255, 255, 0.08);
+    --text-primary-light: #1a1a1a;
+    --text-secondary-light: #6b7280;
+    --text-primary-dark: #f5f5f5;
+    --text-secondary-dark: #9ca3af;
+}
+
+.glass-panel {
+    background: var(--glass-light);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border-light);
+}
+
+.dark .glass-panel {
+    background: var(--glass-dark);
+    border-color: var(--border-dark);
+}
+
+.transition-smooth {
+    transition: all 0.2s ease;
+}
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0,0,0,0.1) transparent;
+}
