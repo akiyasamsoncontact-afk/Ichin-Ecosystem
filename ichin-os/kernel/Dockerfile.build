@@ -1,0 +1,38 @@
+# ICHIN OS Kernel Cross-Compilation Builder
+# Uses Ubuntu + Rust nightly + Limine for bare-metal x86_64 kernel builds
+
+FROM ubuntu:24.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    curl \
+    wget \
+    unzip \
+    xorriso \
+    mtools \
+    nasm \
+    qemu-system-x86 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Rust nightly with bare-metal target support
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain none
+ENV PATH="/root/.cargo/bin:${PATH}"
+
+# Install nightly Rust + rust-src for build-std
+RUN rustup install nightly-2024-07-01
+RUN rustup component add rust-src --toolchain nightly-2024-07-01
+RUN rustup component add llvm-tools --toolchain nightly-2024-07-01
+
+# Install Limine bootloader
+RUN mkdir -p /limine && \
+    wget -q https://github.com/limine-bootloader/limine/releases/download/v8.3.0/limine-8.3.0.zip -O /tmp/limine.zip && \
+    unzip -q /tmp/limine.zip -d /limine/ && \
+    rm /tmp/limine.zip
+
+# Set nightly as default for this project
+RUN rustup default nightly-2024-07-01
+
+WORKDIR /build
+ENTRYPOINT ["/bin/bash"]

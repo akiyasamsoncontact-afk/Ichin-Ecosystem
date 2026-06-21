@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ichin-config
+  namespace: ichin-system
+data:
+  REDIS_URL: "redis://ichin-redis:6379/0"
+  DATABASE_URL: "postgresql+asyncpg://ichin:ichin_secret@ichin-postgres:5432/ichin_os"
+  QDRANT_URL: "http://ichin-qdrant:6333"
+  ORCHESTRATOR_URL: "http://ichin-orchestrator:8011"
+  AGENTS_URL: "http://ichin-agents:8012"
+  MEMORY_ENGINE_URL: "http://ichin-memory-engine:8013"
+  UI_SYSTEM_URL: "http://ichin-ui-system:8014"
+  APP_RUNTIME_URL: "http://ichin-app-runtime:8015"
+  AI_STUDIO_URL: "http://ichin-ai-studio:8016"
+  SECURITY_CORE_URL: "http://ichin-security-core:8017"
+  LOG_LEVEL: "info"
+  REDIS_MAX_MEMORY: "2gb"
+  REDIS_EVICTION_POLICY: "allkeys-lru"
+  POSTGRES_MAX_CONNECTIONS: "50"
+  POSTGRES_SHARED_BUFFERS: "256MB"
+  QDRANT_LOG_LEVEL: "INFO"
+  ORCHESTRATOR_WORKERS: "4"
+  AGENTS_WORKERS: "2"
+  MEMORY_ENGINE_WORKERS: "2"
+  UI_SYSTEM_WORKERS: "2"
+  AI_STUDIO_WORKERS: "2"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ichin-edge-config
+  namespace: ichin-system
+data:
+  EDGE_MODE: "hybrid"
+  LOCAL_UI_PORT: "3000"
+  CLOUD_RELAY_URL: "https://relay.ichin.ai"
+  SYNC_INTERVAL: "10"
+  OFFLINE_CACHE_TTL: "3600"

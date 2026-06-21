@@ -1,0 +1,10 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "paths": {
+      "@ichin/shared-types": ["../../packages/shared-types/src"]
+    }
+  },
+  "include": ["src", "App.tsx"]
+}

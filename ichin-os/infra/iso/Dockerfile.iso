@@ -1,0 +1,53 @@
+# ICHIN OS — Docker ISO Builder
+# Multi-stage: builds kernel + initramfs + services → produces bootable ISO
+# Usage: docker build -t ichin-iso . && docker run --rm ichin-iso > ichin-os.iso
+
+FROM ubuntu:24.04 AS builder
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    wget \
+    curl \
+    cpio \
+    gzip \
+    grub-pc-bin \
+    grub-common \
+    grub-efi-amd64-bin \
+    xorriso \
+    mtools \
+    python3 \
+    python3-pip \
+    python3-venv \
+    rustup \
+    nodejs \
+    npm \
+    git \
+    unzip \
+    && rm -rf /var/lib/apt/lists/*
+
+# Rust for building services
+RUN rustup install nightly-2024-07-01 && \
+    rustup component add rust-src --toolchain nightly-2024-07-01 && \
+    rustup default nightly-2024-07-01
+
+# Bun for Dexter (autonomous financial research agent)
+RUN curl -fsSL https://bun.sh/install | bash && \
+    ln -sf /root/.bun/bin/bun /usr/local/bin/bun
+
+WORKDIR /ichin
+
+# Copy entire ichin-os source
+COPY .. .
+
+# Build the ISO
+RUN cd infra/iso && bash build-iso.sh native
+
+# Extract the ISO
+RUN cp infra/iso/build/ichin-os-*.iso /ichin-os.iso 2>/dev/null || \
+    cp infra/iso/*.iso /ichin-os.iso 2>/dev/null || true
+
+# === Runtime stage: serve ISO ===
+FROM scratch
+COPY --from=builder /ichin-os.iso /ichin-os.iso

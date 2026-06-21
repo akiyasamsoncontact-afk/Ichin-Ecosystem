@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ICHIN OS — Developer Platform</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <nav class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">ICHIN OS</div>
+      <div class="logo-sub">Developer Platform</div>
+    </div>
+    <ul class="nav-list">
+      <li><a href="#getting-started" data-section="getting-started">Getting Started</a></li>
+      <li><a href="#app-architecture" data-section="app-architecture">App Architecture</a></li>
+      <li class="nav-group">
+        <span class="nav-group-title">API Reference</span>
+        <ul>
+          <li><a href="#api-ai" data-section="api-ai">AI API</a></li>
+          <li><a href="#api-memory" data-section="api-memory">Memory API</a></li>
+          <li><a href="#api-calendar" data-section="api-calendar">Calendar API</a></li>
+          <li><a href="#api-file" data-section="api-file">File API</a></li>
+          <li><a href="#api-notification" data-section="api-notification">Notification API</a></li>
+        </ul>
+      </li>
+      <li><a href="#permissions" data-section="permissions">Permission Model</a></li>
+      <li class="nav-group">
+        <span class="nav-group-title">SDK Guide</span>
+        <ul>
+          <li><a href="#sdk-typescript" data-section="sdk-typescript">TypeScript</a></li>
+          <li><a href="#sdk-python" data-section="sdk-python">Python</a></li>
+          <li><a href="#sdk-rust" data-section="sdk-rust">Rust</a></li>
+        </ul>
+      </li>
+      <li><a href="#app-store" data-section="app-store">App Store Publishing</a></li>
+      <li><a href="#ai-integration" data-section="ai-integration">AI Integration Guide</a></li>
+      <li><a href="#best-practices" data-section="best-practices">Best Practices</a></li>
+    </ul>
+  </nav>
+
+  <main class="content">
+    <section id="getting-started" class="section active">
+      <h1>Getting Started</h1>
+      <p class="lead">Build applications that extend the ICHIN OS cognitive ecosystem.</p>
+      <h2>Quick Start</h2>
+      <p>Apps in ICHIN OS are sandboxed, AI-aware extensions that integrate into workspaces, the Orb notification system, and the Spotlight interface.</p>
+      <pre><code># Create a new app
+npx create-ichin-app my-app --template typescript
+
+# Install dependencies
+cd my-app && npm install
+
+# Start development
+npm run dev</code></pre>
+      <h2>Prerequisites</h2>
+      <ul>
+        <li>Node.js 18+ or Python 3.11+</li>
+        <li>ICHIN OS Developer SDK</li>
+        <li>Access to the App Store Developer Portal</li>
+      </ul>
+      <h2>App Structure</h2>
+      <p>Every ICHIN app requires a <code>manifest.json</code> file that declares identity, permissions, AI compatibility, and workspace integration.</p>
+    </section>
+
+    <section id="app-architecture" class="section">
+      <h1>App Architecture</h1>
+      <p class="lead">ICHIN OS supports three app types, each with different integration levels.</p>
+      <h2>Native Ichin Apps</h2>
+      <p>Built specifically for ICHIN OS. Full AI, memory, and workspace integration. Best performance.</p>
+      <h2>Web Apps (Wrapped)</h2>
+      <p>Run inside a sandbox container. Limited system access. UI integrates into workspace system.</p>
+      <h2>External Apps (Compatibility Mode)</h2>
+      <p>Linux / Windows / Android apps executed via compatibility layers. Restricted AI integration.</p>
+      <h2>Sandbox Architecture</h2>
+      <p>All apps run in isolated containers with no direct OS access. Communication passes through the Orchestrator Service.</p>
+      <pre><code>App → Sandbox → Permission Check → API Gateway → Orchestrator → System</code></pre>
+    </section>
+
+    <section id="api-ai" class="section">
+      <h1>AI API</h1>
+      <p class="lead">Query the ICHIN AI system from your app via the Orchestrator Service (<a href="http://localhost:8011/docs" target="_blank">port 8011</a>).</p>
+      <h2>Orchestrate (main AI endpoint)</h2>
+      <pre><code>POST http://localhost:8011/orchestrate
+{
+  "request": "Summarize my recent notes",
+  "workspace": "study",
+  "mode": "normal"
+}</code></pre>
+      <h2>Classify Request</h2>
+      <pre><code>POST http://localhost:8011/classify
+{
+  "request": "Plan my study schedule",
+  "workspace": "study"
+}</code></pre>
+      <h2>Get Session Context</h2>
+      <pre><code>GET http://localhost:8011/context/{session_id}</code></pre>
+      <p>All AI API calls are routed through the Orchestrator for permission checking and resource management. The Orchestrator selects agents, runs weighted voting, and validates decisions.</p>
+    </section>
+
+    <section id="api-memory" class="section">
+      <h1>Memory API</h1>
+      <p class="lead">Read and write structured data to the ICHIN Memory Engine (<a href="http://localhost:8013/docs" target="_blank">port 8013</a>).</p>
+      <h2>Store Memory</h2>
+      <pre><code>POST http://localhost:8013/memory/store
+{
+  "key": "user_preference_theme",
+  "value": "dark",
+  "type": "fact",
+  "workspace": "coding",
+  "importance": 0.8
+}</code></pre>
+      <h2>Query Memory</h2>
+      <pre><code>POST http://localhost:8013/memory/query
+{
+  "query": "coding preferences",
+  "workspace": "coding",
+  "limit": 5
+}</code></pre>
+      <h2>Promote to Long-Term</h2>
+      <pre><code>POST http://localhost:8013/memory/promote
+{
+  "memory_id": "mem_123",
+  "target_layer": "long_term"
+}</code></pre>
+      <p>Memory access is restricted by app permissions. 4 layers: ephemeral, working, long-term semantic, structured. Memory decays over 30-day half-life unless reused. Workspace isolation enforced.</p>
+    </section>
+
+    <section id="api-calendar" class="section">
+      <h1>Calendar API</h1>
+      <p class="lead">Calendar operations are handled by the Calendar Agent within the Agents Service (<a href="http://localhost:8012/docs" target="_blank">port 8012</a>).</p>
+      <h2>Execute Calendar Agent</h2>
+      <pre><code>POST http://localhost:8012/agent/execute
+{
+  "agent": "calendar",
+  "request": "Create a study session tomorrow at 10am for 2 hours",
+  "workspace": "study",
+  "mode": "normal"
+}</code></pre>
+      <p>The Calendar Agent detects events, proposes entries, resolves conflicts, and optimizes schedules. Requires CALENDAR_ACCESS permission. Events are linked to workspaces for contextual scheduling.</p>
+    </section>
+
+    <section id="api-file" class="section">
+      <h1>File API</h1>
+      <p class="lead">File operations are managed by the App Runtime Service (<a href="http://localhost:8015/docs" target="_blank">port 8015</a>).</p>
+      <h2>Install App (grants sandbox)</h2>
+      <pre><code>POST http://localhost:8015/app/install
+{
+  "manifest": {
+    "name": "My App",
+    "version": "1.0.0",
+    "app_type": "native",
+    "permissions": [
+      { "type": "file_access", "granted": true, "user_approved": true }
+    ]
+  }
+}</code></pre>
+      <h2>Run App</h2>
+      <pre><code>POST http://localhost:8015/app/{id}/run</code></pre>
+      <p>All app file operations are sandboxed. No direct OS access. Requires FILE_ACCESS permission. Files are automatically indexed by the AI system via the memory engine.</p>
+    </section>
+
+    <section id="api-notification" class="section">
+      <h1>Notification API (Orb System)</h1>
+      <p class="lead">Trigger AI Orb events through the UI System Service (<a href="http://localhost:8014/docs" target="_blank">port 8014</a>).</p>
+      <h2>Trigger Orb Event</h2>
+      <pre><code>POST http://localhost:8014/orb/notify
+{
+  "message": "Document analysis complete",
+  "state": "active",
+  "source": "my-app-name"
+}</code></pre>
+      <h2>Orb State</h2>
+      <pre><code>GET http://localhost:8014/orb/state</code></pre>
+      <p>Orb states: idle (faint glow), active (30s countdown window), critical (strong glow, requires action). Requires NOTIFICATIONS_ACCESS permission. Notifications respect focus mode rules — suppressed in deep_focus, blocked in lock mode.</p>
+    </section>
+
+    <section id="permissions" class="section">
+      <h1>Permission Model</h1>
+      <p class="lead">Every app must declare its permissions. No permission = no access.</p>
+      <h2>Permission Types</h2>
+      <div class="perm-grid">
+        <div class="perm-card">
+          <div class="perm-name">AI_ACCESS</div>
+          <div class="perm-desc">Use the ICHIN AI system</div>
+        </div>
+        <div class="perm-card">
+          <div class="perm-name">MEMORY_READ</div>
+          <div class="perm-desc">Read user memory (restricted)</div>
+        </div>
+        <div class="perm-card">
+          <div class="perm-name">FILE_ACCESS</div>
+          <div class="perm-desc">File system access</div>
+        </div>
+        <div class="perm-card">
+          <div class="perm-name">NETWORK_ACCESS</div>
+          <div class="perm-desc">Internet usage</div>
+        </div>
+        <div class="perm-card">
+          <div class="perm-name">WORKSPACE_INTEGRATION</div>
+          <div class="perm-desc">UI embedding in workspaces</div>
+        </div>
+        <div class="perm-card">
+          <div class="perm-name">CALENDAR_ACCESS</div>
+          <div class="perm-desc">Calendar operations</div>
+        </div>
+        <div class="perm-card">
+          <div class="perm-name">NOTIFICATIONS_ACCESS</div>
+          <div class="perm-desc">Trigger Orb notifications</div>
+        </div>
+      </div>
+      <h2>Rules</h2>
+      <ul>
+        <li>Permissions must be user-approved</li>
+        <li>Sensitive permissions require explicit confirmation</li>
+        <li>AI can suggest but not override permissions</li>
+        <li>Users can revoke permissions at any time</li>
+      </ul>
+    </section>
+
+    <section id="sdk-typescript" class="section">
+      <h1>TypeScript SDK</h1>
+      <p class="lead">Build ICHIN apps with TypeScript for full type safety. Packages are in <code>ichin-os/packages/</code>.</p>
+      <pre><code># In your monorepo:
+npm install @ichin/shared-types   # shared type definitions
+npm install @ichin/ai-sdk         # AI agent & workflow builders
+npm install @ichin/ui-components  # React component library
+npm install @ichin/permissions-model  # permission utilities</code></pre>
+      <pre><code>import { AgentBuilder } from '@ichin/ai-sdk'
+import { AIOrchestratorClient } from '@ichin/ai-sdk'
+import type { WorkspaceType, FocusMode } from '@ichin/shared-types'
+ 
+ const client = new AIOrchestratorClient('http://localhost:8011')
+ 
+ // Query AI via Orchestrator
+ const result = await client.orchestrate({
+   request: 'Summarize my day',
+   workspace: 'study',
+   mode: 'normal',
+ })
+ 
+ // Build a custom agent
+ const agent = new AgentBuilder()
+   .setName('My Assistant')
+   .setRole('Helps with daily tasks')
+   .setReasoningStyle('structured')
+   .setTools(['calendar', 'notes'])
+   .build()</code></pre>
+    </section>
+
+    <section id="sdk-python" class="section">
+      <h1>Python SDK</h1>
+      <p class="lead">Build ICHIN AI agents and automation tools with Python. See the app template at <code>ichin-os/ecosystem/app-templates/python-agent/</code>.</p>
+      <pre><code># Agents integrate via HTTP to ICHIN services:
+from agent import StudyAssistantAgent
+import asyncio
+ 
+ agent = StudyAssistantAgent()
+ asyncio.run(agent.on_activate({"workspace": "study"}))
+ 
+ # Uses Orchestrator (port 8011): POST /orchestrate
+ result = await agent.process_task({
+     "action": "summarize",
+     "content": "Biology chapter 5 notes",
+ })
+ 
+ # Uses Memory Engine (port 8013): POST /memory/store
+ await agent.write_memory("last_topic", "Biology")
+ 
+ # Uses UI System (port 8014): POST /orb/notify
+ await agent.notify("Summary ready", "active")</code></pre>
+    </section>
+
+    <section id="sdk-rust" class="section">
+      <h1>Rust SDK</h1>
+      <p class="lead">Build high-performance system tools and extensions. Kernel services at <code>ichin-os/kernel/</code>.</p>
+      <pre><code># Use the unified kernel crate:
+cargo add --path ../kernel</code></pre>
+      <pre><code>// Unified ICHIN Kernel (port 7000) exposes REST APIs for all subsystems:
+// GET  /status                    — Full kernel status (state, uptime, processes, memory)
+// GET  /process/list              — List all processes
+// POST /process/spawn             — Spawn a process (body: { name, priority, sandbox_level })
+// POST /process/kill/{pid}        — Kill a process
+// GET  /memory                    — Memory usage stats
+// GET  /scheduler                 — Scheduler status & queue info
+// POST /scheduler/policy          — Set policy: round-robin, priority, cfs, realtime
+// GET  /syscall                   — Syscall handler stats
+// POST /syscall/invoke            — Invoke a syscall
+// GET  /ipc/channels              — IPC channel & message count
+// POST /ipc/send                  — Send IPC message
+// GET  /ipc/recv/{pid}            — Receive pending IPC messages
+// GET  /sandbox/policies          — Sandbox policy count
+// POST /sandbox/assign            — Assign sandbox level to process
+// POST /sandbox/check             — Check permission against policy
+// GET  /rollback/snapshots        — List snapshots
+// POST /rollback/snapshot         — Take a snapshot
+// POST /rollback/restore/{id}     — Rollback to snapshot
+// GET  /drivers                   — Driver & device status
+// GET  /fs/read/{path}            — Read file from VFS
+// POST /fs/write/{path}           — Write file to VFS
+// GET  /fs/ls/{path}              — List VFS directory
+// GET  /services                  — Service manager status
+// POST /services/start/{id}       — Start a system service
+// POST /services/stop/{id}        — Stop a system service
+// POST /services/heartbeat/{id}   — Send service heartbeat
+// GET  /boot                      — Boot sequence status
+// POST /shutdown                  — Shutdown kernel</code></pre>
+    </section>
+
+    <section id="app-store" class="section">
+      <h1>App Store Publishing</h1>
+      <p class="lead">Submit your app to the ICHIN App Store for distribution.</p>
+      <h2>Submission Process</h2>
+      <ol>
+        <li>Prepare your app with a valid manifest.json</li>
+        <li>Submit through the App Store API (<code>POST http://localhost:8021/api/store/apps</code>)</li>
+        <li>AI simulation review checks security, sandbox, performance, and AI compatibility</li>
+        <li>App receives a review score and is published if approved</li>
+      </ol>
+      <h2>AI Review Process</h2>
+      <p>Every app undergoes automated AI simulation testing:</p>
+      <ul>
+        <li><strong>Security Validation</strong> — Scans permissions and identifies risks</li>
+        <li><strong>Sandbox Compliance</strong> — Ensures proper isolation</li>
+        <li><strong>Performance Test</strong> — Checks resource usage patterns</li>
+        <li><strong>AI Compatibility Test</strong> — Validates AI integration quality</li>
+      </ul>
+      <h2>Categories</h2>
+      <p>Apps can be published under: Productivity, Study Tools, Coding Tools, AI Agents, Learning Modules, System Extensions.</p>
+    </section>
+
+    <section id="ai-integration" class="section">
+      <h1>AI Integration Guide</h1>
+      <p class="lead">Make your app AI-aware and contextually intelligent.</p>
+      <h2>AI App Types</h2>
+      <h3>Assistant Apps</h3>
+      <p>Context-aware helpers that run inside workspaces. They provide inline assistance based on the user's current activity.</p>
+      <h3>Agent Apps</h3>
+      <p>Custom AI agents that integrate into the Council system. They can participate in multi-agent reasoning for complex tasks.</p>
+      <h3>Automation Apps</h3>
+      <p>Trigger workflows and connect apps together. They define event-driven or time-based automation sequences.</p>
+      <h2>Integration Rules</h2>
+      <ul>
+        <li>AI apps must use the Orchestrator for execution</li>
+        <li>All AI operations must follow memory restrictions</li>
+        <li>Apps must declare their AI behavior scope in the manifest</li>
+        <li>AI system always has priority over app execution</li>
+      </ul>
+    </section>
+
+    <section id="best-practices" class="section">
+      <h1>Best Practices</h1>
+      <p class="lead">Follow these guidelines to build high-quality ICHIN apps.</p>
+      <h2>Design Principles</h2>
+      <ul>
+        <li>Apps are extensions of cognitive workflows, not standalone experiences</li>
+        <li>Visual design must integrate into the workspace system — no foreign UI styles</li>
+        <li>Use the Orb system for notifications, not custom toast UIs</li>
+        <li>Respect Focus modes — heavy operations should be throttled</li>
+      </ul>
+      <h2>Performance</h2>
+      <ul>
+        <li>Apps must not block the AI system</li>
+        <li>Resource limits are enforced per app</li>
+        <li>Use memory efficiently — apps share resources with the rest of ICHIN</li>
+      </ul>
+      <h2>Security</h2>
+      <ul>
+        <li>Sandbox isolation is mandatory — no direct OS access</li>
+        <li>API communication is encrypted</li>
+        <li>The AI security agent monitors app behavior</li>
+        <li>Rollback system available for system-level changes</li>
+        <li>Request minimum permissions — no permission = no access</li>
+      </ul>
+      <h2>UX Integration</h2>
+      <ul>
+        <li>Integrate into workspace system (Service 4)</li>
+        <li>Support Spotlight for quick actions</li>
+        <li>Use Orb for attention requests</li>
+        <li>Follow the ICHIN design language</li>
+      </ul>
+    </section>
+
+    <footer class="footer">
+      <p>ICHIN OS Developer Platform — Build for the cognitive ecosystem.</p>
+    </footer>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

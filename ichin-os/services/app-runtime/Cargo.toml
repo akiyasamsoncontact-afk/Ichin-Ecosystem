@@ -1,0 +1,17 @@
+[package]
+name = "ichin-os-app-runtime"
+version = "0.1.0"
+edition = "2021"
+description = "ICHIN OS Service 5 — App Ecosystem + Developer Platform"
+
+[dependencies]
+axum = { version = "0.7", features = ["macros"] }
+tokio = { version = "1", features = ["full"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tower-http = { version = "0.5", features = ["cors", "trace"] }
+uuid = { version = "1", features = ["v4"] }
+chrono = { version = "0.4", features = ["serde"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+rand = "0.8"

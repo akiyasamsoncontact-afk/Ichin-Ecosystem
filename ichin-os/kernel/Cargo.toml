@@ -1,0 +1,22 @@
+[package]
+name = "ichin-kernel"
+version = "0.1.0"
+edition = "2021"
+description = "ICHIN OS bare-metal x86_64 microkernel — native host for all ecosystem components"
+
+[dependencies]
+limine = { version = "0.3", features = ["limine-v3"] }
+x86_64 = "0.15"
+uart_16550 = "0.3"
+spin = "0.9"
+linked_list_allocator = "0.10"
+volatile = "0.6"
+
+# No build dependencies needed (pure Rust + linker.ld)
+
+[profile.release]
+opt-level = 2
+debug = false
+lto = true
+codegen-units = 1
+strip = true

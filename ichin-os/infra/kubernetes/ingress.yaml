@@ -1,0 +1,146 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ichin-ingress
+  namespace: ichin-system
+  labels:
+    app.kubernetes.io/name: ichin-ingress
+    app.kubernetes.io/part-of: ichin-os
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "120"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "120"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - ichin.ai
+        - "*.ichin.ai"
+      secretName: ichin-tls
+  rules:
+    - host: ichin.ai
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: ichin-desktop-ui
+                port:
+                  number: 80
+    - host: api.ichin.ai
+      http:
+        paths:
+          - path: /ai/query
+            pathType: Prefix
+            backend:
+              service:
+                name: ichin-orchestrator
+                port:
+                  number: 8011
+          - path: /ai/agents
+            pathType: Prefix
+            backend:
+              service:
+                name: ichin-agents
+                port:
+                  number: 8012
+          - path: /ai/memory
+            pathType: Prefix
+            backend:
+              service:
+                name: ichin-memory-engine
+                port:
+                  number: 8013
+          - path: /ai/studio
+            pathType: Prefix
+            backend:
+              service:
+                name: ichin-ai-studio
+                port:
+                  number: 8016
+          - path: /security
+            pathType: Prefix
+            backend:
+              service:
+                name: ichin-security-core
+                port:
+                  number: 8017
+          - path: /ws
+            pathType: Prefix
+            backend:
+              service:
+                name: ichin-ui-system
+                port:
+                  number: 8014
+    - host: app.ichin.ai
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: ichin-app-runtime
+                port:
+                  number: 8015
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: ichin-network-policy
+  namespace: ichin-system
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: ichin-system
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: ichin-ingress-controller
+      ports:
+        - protocol: TCP
+          port: 8011
+        - protocol: TCP
+          port: 8012
+        - protocol: TCP
+          port: 8013
+        - protocol: TCP
+          port: 8014
+        - protocol: TCP
+          port: 8015
+        - protocol: TCP
+          port: 8016
+        - protocol: TCP
+          port: 8017
+        - protocol: TCP
+          port: 80
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: ichin-system
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+          except:
+            - 10.0.0.0/8
+            - 172.16.0.0/12
+            - 192.168.0.0/16
+      ports:
+        - protocol: TCP
+          port: 443
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+      ports:
+        - protocol: UDP
+          port: 53

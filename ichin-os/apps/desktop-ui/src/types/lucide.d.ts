@@ -1,0 +1,72 @@
+declare module 'lucide-react' {
+  import { FC, SVGProps } from 'react'
+  export interface IconProps extends Partial<SVGProps<SVGSVGElement>> {
+    size?: number | string
+    absoluteStrokeWidth?: boolean
+  }
+  export type Icon = FC<IconProps>
+  export const Search: Icon
+  export const Terminal: Icon
+  export const FileText: Icon
+  export const MessageSquare: Icon
+  export const ArrowRight: Icon
+  export const Book: Icon
+  export const Code: Icon
+  export const Brain: Icon
+  export const User: Icon
+  export const LayoutDashboard: Icon
+  export const Settings: Icon
+  export const Lightbulb: Icon
+  export const Layers: Icon
+  export const BookOpen: Icon
+  export const Sparkles: Icon
+  export const ChevronRight: Icon
+  export const File: Icon
+  export const Folder: Icon
+  export const CodeIcon: Icon
+  export const Bug: Icon
+  export const AlertTriangle: Icon
+  export const Circle: Icon
+  export const CheckCircle2: Icon
+  export const CircleIcon: Icon
+  export const Plus: Icon
+  export const Clock: Icon
+  export const Mail: Icon
+  export const Calendar: Icon
+  export const Tags: Icon
+  export const SearchIcon: Icon
+  export const GitBranch: Icon
+  export const Activity: Icon
+  export const Shield: Icon
+  export const Zap: Icon
+  export const Users: Icon
+  export const X: Icon
+  export const Sliders: Icon
+  export const Eye: Icon
+  export const Palette: Icon
+  export const Keyboard: Icon
+  export const Lock: Icon
+  export const Download: Icon
+  export const Star: Icon
+  export const Bot: Icon
+  export const BarChart3: Icon
+  export const Play: Icon
+  export const Save: Icon
+  export const Workflow: Icon
+  export const Tool: Icon
+  export const Globe: Icon
+  export const Database: Icon
+  export const Cpu: Icon
+  export const Monitor: Icon
+  export const Smartphone: Icon
+  export const Tablet: Icon
+  export const Wifi: Icon
+  export const Bluetooth: Icon
+  export const Volume2: Icon
+  export const VolumeX: Icon
+  export const Maximize2: Icon
+  export const Minimize2: Icon
+  export const Sun: Icon
+  export const Moon: Icon
+  export const ChevronLeft: Icon
+}

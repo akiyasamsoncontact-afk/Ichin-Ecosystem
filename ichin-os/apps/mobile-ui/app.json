@@ -1,0 +1,23 @@
+{
+  "expo": {
+    "name": "ICHIN OS Mobile",
+    "slug": "ichin-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "backgroundColor": "#0A0A0A"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.ichin.mobile"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#0A0A0A"
+      },
+      "package": "com.ichin.mobile"
+    }
+  }
+}

@@ -1,0 +1,106 @@
+{
+  "id": "daily-study-routine",
+  "name": "Daily Study Routine",
+  "description": "Automates a daily study session with AI-powered summarization and task tracking via ICHIN AI Studio (port 8016) and Orchestrator (port 8011)",
+  "version": "1.0.0",
+  "enabled": true,
+  "createdAt": 1718870400000,
+  "updatedAt": 1718870400000,
+  "serviceEndpoints": {
+    "orchestrator": "http://localhost:8011/api/workflow/run",
+    "aiStudio": "http://localhost:8016/api/workflow/run",
+    "memory": "http://localhost:8013/memory/query"
+  },
+  "trigger": {
+    "type": "time",
+    "config": {
+      "schedule": "0 9 * * 1-5",
+      "timezone": "UTC"
+    }
+  },
+  "conditions": [
+    {
+      "id": "check-focus-mode",
+      "type": "system_state",
+      "config": {
+        "check": "focus_mode",
+        "expected": ["normal", "focus"],
+        "description": "Only run if not in deep_focus or lock mode"
+      }
+    }
+  ],
+  "actions": [
+    {
+      "id": "action-1",
+      "type": "ai",
+      "config": {
+        "agent": "sage",
+        "task": "summarize",
+        "prompt": "Summarize yesterday's study notes and suggest today's focus areas",
+        "context": {
+          "workspace": "study",
+          "timeframe": "last_24h"
+        }
+      }
+    },
+    {
+      "id": "action-2",
+      "type": "create_task",
+      "config": {
+        "title": "Review {{action-1.summary}}",
+        "workspace": "study",
+        "priority": 2,
+        "tags": ["automated", "study", "daily"]
+      }
+    },
+    {
+      "id": "action-3",
+      "type": "trigger_orb",
+      "config": {
+        "message": "Daily study routine ready — {{action-1.summary}}",
+        "state": "active",
+        "actions": [
+          { "label": "Open Study Workspace", "action": "workspace:open:study" },
+          { "label": "Dismiss", "action": "dismiss" }
+        ]
+      }
+    }
+  ],
+  "nodes": [
+    {
+      "id": "trigger-node",
+      "type": "trigger",
+      "config": {},
+      "position": { "x": 100, "y": 200 },
+      "connections": ["condition-node"]
+    },
+    {
+      "id": "condition-node",
+      "type": "condition",
+      "config": { "type": "focus_mode_check" },
+      "position": { "x": 300, "y": 200 },
+      "connections": ["ai-node"]
+    },
+    {
+      "id": "ai-node",
+      "type": "ai",
+      "config": { "agent": "sage", "task": "summarize" },
+      "position": { "x": 500, "y": 200 },
+      "connections": ["task-node", "orb-node"]
+    },
+    {
+      "id": "task-node",
+      "type": "action",
+      "config": { "action_type": "create_task" },
+      "position": { "x": 700, "y": 140 },
+      "connections": []
+    },
+    {
+      "id": "orb-node",
+      "type": "action",
+      "config": { "action_type": "trigger_orb" },
+      "position": { "x": 700, "y": 260 },
+      "connections": []
+    }
+  ]
+}

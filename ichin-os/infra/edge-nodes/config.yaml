@@ -1,0 +1,87 @@
+# ICHIN OS Edge Node Configuration
+# Hybrid deployment: local UI + cloud AI compute
+
+edge_node:
+  node_id: "${EDGE_NODE_ID:edge-node-1}"
+  mode: "${EDGE_MODE:hybrid}"  # local | cloud | hybrid
+  environment: "${NODE_ENV:production}"
+
+  # Local services running on the edge device
+  local:
+    enabled: true
+    ui:
+      port: 3000
+      host: "0.0.0.0"
+      ssl: false
+    cache:
+      type: "sqlite"  # sqlite | redis
+      path: "${CACHE_PATH:/data/ichin/cache.db}"
+      max_size_mb: 500
+
+  # Cloud relay configuration
+  cloud:
+    relay_url: "${CLOUD_RELAY_URL:https://relay.ichin.ai}"
+    api_key: "${CLOUD_API_KEY:}"
+    connect_timeout_ms: 5000
+    request_timeout_ms: 30000
+    retry:
+      max_retries: 3
+      backoff_ms: 1000
+
+    # Services to offload to cloud
+    offload:
+      ai_reasoning: true
+      complex_agents: true
+      memory_search: true
+      model_inference: true
+      heavy_compute: true
+
+  # Sync configuration for hybrid mode
+  sync:
+    interval_seconds: "${SYNC_INTERVAL:10}"
+    batch_size: 100
+    conflict_resolution: "last-write-wins"
+    offline:
+      enabled: true
+      cache_ttl_seconds: "${OFFLINE_CACHE_TTL:3600}"
+      queue_capacity: 1000
+
+  # Supported capabilities
+  capabilities:
+    max_agents: 5
+    gpu_acceleration: false
+    local_ai_models:
+      - "phi-3-mini"
+      - "tinyllama"
+    embedded_db: true
+    websocket_support: true
+
+  # Security for edge
+  security:
+    tls_enabled: false
+    local_auth: "token"
+    audit_log: true
+    sandbox_level: "strict"
+
+  # Network configuration
+  network:
+    listen_interfaces:
+      - "127.0.0.1"
+      - "192.168.0.0/16"
+    allowed_origins:
+      - "http://localhost:3000"
+      - "https://ichin.ai"
+    cors_enabled: true
+
+  # Logging
+  logging:
+    level: "${LOG_LEVEL:info}"
+    format: "json"
+    output: ["stdout", "${LOG_PATH:/var/log/ichin/edge.log}"]
+
+  # Health monitoring
+  health:
+    check_interval_seconds: 30
+    heartbeat_url: "${CLOUD_RELAY_URL}/heartbeat"
+    heartbeat_interval_seconds: 60
+    auto_recovery: true

@@ -1,0 +1,34 @@
+{
+  "id": "python-agent-template",
+  "name": "Python Agent Template",
+  "description": "A template for building Python AI agents for ICHIN OS",
+  "version": "1.0.0",
+  "author": "ICHIN OS",
+  "icon": "robot",
+  "category": "ai-agents",
+  "appType": "native",
+  "permissions": [
+    {
+      "id": "AI_ACCESS",
+      "name": "AI Access",
+      "description": "Use the ICHIN AI system",
+      "granted": false
+    },
+    {
+      "id": "MEMORY_READ",
+      "name": "Memory Read",
+      "description": "Read user memory (restricted)",
+      "granted": false
+    },
+    {
+      "id": "NOTIFICATIONS_ACCESS",
+      "name": "Notifications Access",
+      "description": "Trigger Orb notifications",
+      "granted": false
+    }
+  ],
+  "aiCompatibility": 0.85,
+  "aiTested": false,
+  "workspaceIntegration": ["personal", "coding"],
+  "rating": 0.0
+}

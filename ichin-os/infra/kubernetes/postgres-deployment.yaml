@@ -1,0 +1,138 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ichin-db-secret
+  namespace: ichin-system
+type: Opaque
+stringData:
+  password: ichin_secret
+  username: ichin
+  database: ichin_os
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ichin-postgres
+  namespace: ichin-system
+  labels:
+    app.kubernetes.io/name: ichin-postgres
+    app.kubernetes.io/component: database
+    app.kubernetes.io/part-of: ichin-os
+spec:
+  serviceName: ichin-postgres-headless
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ichin-postgres
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: ichin-postgres
+        app.kubernetes.io/component: database
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+        runAsGroup: 999
+        fsGroup: 999
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          ports:
+            - containerPort: 5432
+              protocol: TCP
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: ichin-db-secret
+                  key: username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: ichin-db-secret
+                  key: password
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: ichin-db-secret
+                  key: database
+            - name: POSTGRES_MAX_CONNECTIONS
+              value: "50"
+            - name: POSTGRES_SHARED_BUFFERS
+              value: "256MB"
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "512Mi"
+            limits:
+              cpu: "2"
+              memory: "4Gi"
+          livenessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - ichin
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - ichin
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 50Gi
+        storageClassName: standard
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ichin-postgres
+  namespace: ichin-system
+  labels:
+    app.kubernetes.io/name: ichin-postgres
+    app.kubernetes.io/component: database
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5432
+      targetPort: 5432
+      protocol: TCP
+      name: postgres
+  selector:
+    app.kubernetes.io/name: ichin-postgres
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ichin-postgres-headless
+  namespace: ichin-system
+  labels:
+    app.kubernetes.io/name: ichin-postgres
+    app.kubernetes.io/component: database
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+    - port: 5432
+      targetPort: 5432
+      name: postgres
+  selector:
+    app.kubernetes.io/name: ichin-postgres
